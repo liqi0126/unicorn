@@ -7,6 +7,7 @@ import numpy as np
 from pytorch3d.loss import mesh_laplacian_smoothing as laplacian_smoothing
 from pytorch3d.renderer import TexturesVertex, look_at_view_transform, TexturesUV
 from pytorch3d.structures import Meshes
+from pytorch3d.io import IO
 import torch
 import torch.nn as nn
 from torch.nn import functional as F
@@ -83,12 +84,13 @@ class Unicorn(nn.Module):
         kwargs = deepcopy(kwargs)
         mesh_init = kwargs.pop('init', 'sphere')
         scale = kwargs.pop('scale', 1)
-        if 'sphere' in mesh_init or 'ellipse' in mesh_init:
-            mesh = get_icosphere(4 if 'hr' in mesh_init else 3)
-            if 'ellipse' in mesh_init:
-                scale = scale * torch.Tensor([SCALE_ELLIPSE])
-        else:
-            raise NotImplementedError
+        mesh = IO().load_mesh("mesh/car.obj")
+        # if 'sphere' in mesh_init or 'ellipse' in mesh_init:
+        #     mesh = get_icosphere(4 if 'hr' in mesh_init else 3)
+        #     if 'ellipse' in mesh_init:
+        #         scale = scale * torch.Tensor([SCALE_ELLIPSE])
+        # else:
+        #     raise NotImplementedError
         self.mesh_src = mesh.scale_verts(scale)
         self.register_buffer('uvs', convert_3d_to_uv_coordinates(self.mesh_src.get_mesh_verts_faces(0)[0])[None])
 
